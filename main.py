@@ -1,21 +1,27 @@
-from fastapi import FastAPI
-from routers import all_routers
 from dotenv import load_dotenv
-load_dotenv()
+import os
+load_dotenv(override=True)                             
+
+from fastapi import FastAPI                 
+from routers import all_routers             
+
 
 def create_app() -> FastAPI:
     app = FastAPI(title="EasyEntry API", version="0.1.0")
 
-    @app.get("/") # Health-check
+    # Health-check routes
+    @app.get("/")
     def read_root():
         return {"status": "ok"}
-    
-    @app.head("/", include_in_schema=False) #Head handler for clean logs. body ignored
+
+    @app.head("/", include_in_schema=False)
     def root_head():
-        return {"status": "ok"}  
-    
+        return {"status": "ok"}             # body ignored for HEAD
+
+    # Plug in every router (billing, entry, etc.)
     for r in all_routers:
         app.include_router(r)
+
     return app
 
 app = create_app()
