@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from services.ocr import extract_blocks
+from services.ocr_old import extract_blocks
 
 router = APIRouter(prefix="/entries", tags=["entries"])
 
@@ -11,5 +11,5 @@ async def upload_invoice(file: UploadFile = File(...)):
     data = await file.read()          # bytes
     blocks = extract_blocks(data)     # raw Textract blocks
 
-    # TODO: smarter parse in next step
+    """# TODO: smarter parse in next step"""
     return {"block_count": len(blocks), "raw": blocks[:25]}  # truncate for demo

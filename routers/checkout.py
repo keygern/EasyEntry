@@ -24,4 +24,3 @@ def create_session(plan: str):
         automatic_tax={"enabled": False},
     )
     return {"url": session.url}
-``

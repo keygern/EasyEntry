@@ -1,9 +1,8 @@
-import os
 from sqlmodel import SQLModel, create_engine
+from os import getenv
 
-DB_URL = os.getenv("DATABASE_URL", "sqlite:///easyentry.db")
+DATABASE_URL = getenv("DATABASE_URL")
+engine = create_engine(DATABASE_URL, echo=False)   # sync engine
 
-if DB_URL.startswith("sqlite"):
-    engine = create_engine(DB_URL, echo=False, connect_args={"check_same_thread": False})
-else:
-    engine = create_engine(DB_URL, echo=False)   # Postgres needs no connect_args
+def create_db_and_tables() -> None:
+    SQLModel.metadata.create_all(engine)
