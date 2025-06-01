@@ -1,1 +1,6 @@
 .env
+.venv
+ocr_old.py
+entry_old.py
+__pycache__/
+*.pyc

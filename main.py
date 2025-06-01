@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
 import os
+from db import create_db_and_tables
+
 load_dotenv(override=True)                             
 
 from fastapi import FastAPI                 
@@ -25,3 +27,4 @@ def create_app() -> FastAPI:
     return app
 
 app = create_app()
+create_db_and_tables()
