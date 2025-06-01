@@ -85,3 +85,5 @@ def blocks_to_lines(blocks, seller_id: str, db_session: Session) -> List[Invoice
 
 def _clean(t: str) -> str:
     return t.replace("$", "").replace(" ", "").strip()
+
+

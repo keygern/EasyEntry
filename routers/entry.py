@@ -54,6 +54,23 @@ async def upload_invoice(
 
     return {"job_id": job_id, "state": "processing"}
 
+@router.get("/entries/progress/{job_id}")
+def get_progress(job_id: str):
+    """Return real Textract progress as a percent (0-100)."""
+    resp = ocr.tex.get_document_analysis(JobId=job_id)
+    status = resp["JobStatus"]
+
+    if status == "FAILED":
+        raise HTTPException(500, "Textract job failed")
+    if status == "SUCCEEDED":
+        return {"status": "completed", "percent": 100}
+
+    # IN_PROGRESS
+    total   = resp.get("TotalPages", 1)
+    current = resp.get("PagesProcessed", 0)
+    percent = int(current / total * 100)
+    return {"status": "processing", "percent": percent}
+
 def _fetch_blocks(job_id: str):
     try:
         obj = ocr.s3.get_object(
