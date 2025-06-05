@@ -4,3 +4,6 @@ ocr_old.py
 entry_old.py
 __pycache__/
 *.pyc
+*.db
+frontend/node_modules/
+frontend/.next/
