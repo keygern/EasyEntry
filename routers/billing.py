@@ -1,41 +1,56 @@
-from fastapi import APIRouter, Request, HTTPException, status
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
+from sqlmodel import Session, select
 import os, stripe, logging
+from db import engine
+from models import UserPlan
 
 stripe.api_key = os.getenv("STRIPE_SK")
 STRIPE_WH_SECRET = os.getenv("STRIPE_WH_SECRET")
 
-router = APIRouter(prefix="/billing")
+router = APIRouter(prefix="/billing", tags=["billing"])
 logger = logging.getLogger("billing")
 logging.basicConfig(level=logging.INFO)
+
+PLAN_QUOTAS = {"hobby": 5, "growth": 50, "pro": None}
 
 @router.post("/webhook")
 async def stripe_hook(request: Request):
     payload = await request.body()
-    sig     = request.headers.get("stripe-signature")
-
-    # ── 1. verify signature ─────────────────────────────
+    sig = request.headers.get("stripe-signature")
     try:
         event = stripe.Webhook.construct_event(payload, sig, STRIPE_WH_SECRET)
     except Exception:
-        # covers missing header or bad signature
         return JSONResponse({"error": "Bad signature"}, status_code=400)
 
-    # ── 2. act on event type ────────────────────────────
     if event["type"] == "checkout.session.completed":
-        s = event["data"]["object"]
+        data = event["data"]["object"]
+        user_id = data.get("client_reference_id")
+        plan = data.get("metadata", {}).get("plan")
+        if user_id and plan in PLAN_QUOTAS:
+            quota = PLAN_QUOTAS[plan] or 0
+            with Session(engine) as db:
+                rec = db.exec(select(UserPlan).where(UserPlan.user_id == user_id)).first()
+                if rec:
+                    rec.plan = plan
+                    rec.quota_remaining = quota
+                else:
+                    rec = UserPlan(user_id=user_id, plan=plan, quota_remaining=quota)
+                db.add(rec)
+                db.commit()
+            logger.info("Updated plan for %s to %s", user_id, plan)
 
-        # accept email from either field
-        email = s.get("customer_email") or s.get("customer_details", {}).get("email")
-        if not email:
-            logger.warning("Checkout session without email; skipping DB write")
-            return {"received": True}
+    if event["type"] in {"invoice.payment_failed", "customer.subscription.deleted"}:
+        sub = event["data"]["object"]
+        user_id = sub.get("client_reference_id") or sub.get("customer_email")
+        if user_id:
+            with Session(engine) as db:
+                rec = db.exec(select(UserPlan).where(UserPlan.user_id == user_id)).first()
+                if rec:
+                    rec.plan = "hobby"
+                    rec.quota_remaining = PLAN_QUOTAS["hobby"]
+                    db.add(rec)
+                    db.commit()
+            logger.info("Downgraded %s to hobby", user_id)
 
-        # (DB code is commented until User model exists)
-        # with Session() as db:
-        #     ...
-
-        logger.info(f"✅ payment confirmed for {email}")
-
-    # ── 3. always return 200 so Stripe stops retrying ───
     return {"received": True}

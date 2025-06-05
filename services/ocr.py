@@ -32,6 +32,17 @@ def _save_result(job_id: str, blocks: List[Dict]) -> None:
         Body=json.dumps(blocks).encode("utf-8"),
     )
 
+def fetch_blocks(job_id: str) -> List[Dict]:
+    resp = s3.get_object(Bucket=BUCKET, Key=f"{RESULT_PREFIX}{job_id}.json")
+    return json.loads(resp["Body"].read())
+
+def save_parsed(job_id: str, data: Dict) -> None:
+    s3.put_object(
+        Bucket=BUCKET,
+        Key=f"{RESULT_PREFIX}{job_id}_parsed.json",
+        Body=json.dumps(data).encode("utf-8"),
+    )
+
 # ── main polling function (runs in background thread) ─────────────────────
 def poll_job(job_id: str, *, max_try=60, wait=5) -> None:
     """
