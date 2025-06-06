@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
+import { API_BASE } from '../../lib/api';
 
 interface Result {
   status: string;
@@ -9,7 +10,7 @@ interface Result {
 export default function ResultPage() {
   const router = useRouter();
   const { job_id } = router.query as { job_id: string };
-  const api = process.env.NEXT_PUBLIC_API_URL;
+  const api = API_BASE;
 
   const { data, isLoading } = useQuery({
     queryKey: ['result', job_id],

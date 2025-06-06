@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { API_BASE } from '../lib/api';
 
 export default function Upload() {
   const [file, setFile] = useState<File | null>(null);
-  const api = process.env.NEXT_PUBLIC_API_URL;
+  const api = API_BASE;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

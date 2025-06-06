@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { API_BASE } from '../lib/api';
 
 interface Account {
   plan: string;
@@ -7,7 +8,7 @@ interface Account {
 
 export default function Account() {
   const [account, setAccount] = useState<Account | null>(null);
-  const api = process.env.NEXT_PUBLIC_API_URL;
+  const api = API_BASE;
 
   useEffect(() => {
     fetch(`${api}/account`, { credentials: 'include' })
