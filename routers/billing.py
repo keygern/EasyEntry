@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Request, HTTPException, status
+from fastapi import APIRouter, Request, HTTPException, status, Depends
+from .auth import verify_supabase_jwt
 from fastapi.responses import JSONResponse
 import os, stripe, logging
 
 stripe.api_key = os.getenv("STRIPE_SK")
 STRIPE_WH_SECRET = os.getenv("STRIPE_WH_SECRET")
 
-router = APIRouter(prefix="/billing")
+router = APIRouter(prefix="/billing", dependencies=[Depends(verify_supabase_jwt)])
 logger = logging.getLogger("billing")
 logging.basicConfig(level=logging.INFO)
 
@@ -39,3 +40,4 @@ async def stripe_hook(request: Request):
 
     # ── 3. always return 200 so Stripe stops retrying ───
     return {"received": True}
+

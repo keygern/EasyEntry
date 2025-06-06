@@ -87,3 +87,4 @@ def _clean(t: str) -> str:
     return t.replace("$", "").replace(" ", "").strip()
 
 
+

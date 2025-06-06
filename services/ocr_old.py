@@ -24,3 +24,4 @@ def extract_blocks(pdf_bytes: bytes) -> List[Dict]:
 
     pages_used += resp["DocumentMetadata"]["Pages"]
     return resp["Blocks"]
+

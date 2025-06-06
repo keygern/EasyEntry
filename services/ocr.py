@@ -53,3 +53,4 @@ def poll_job(job_id: str, *, max_try=60, wait=5) -> None:
 
         time.sleep(wait)                            # still IN_PROGRESS
     log.error("Textract job %s timed-out", job_id)
+

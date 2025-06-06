@@ -13,3 +13,4 @@ async def upload_invoice(file: UploadFile = File(...)):
 
     """# TODO: smarter parse in next step"""
     return {"block_count": len(blocks), "raw": blocks[:25]}  # truncate for demo
+

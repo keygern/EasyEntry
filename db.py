@@ -23,3 +23,4 @@ else:
 def create_db_and_tables():
     from models import ColumnMapping          # avoid circular import
     SQLModel.metadata.create_all(engine)
+

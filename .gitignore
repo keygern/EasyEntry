@@ -3,6 +3,8 @@
 ocr_old.py
 entry_old.py
 __pycache__/
+**/__pycache__/
+easyentry.db
 *.pyc
 frontend/node_modules/
 frontend/.next/

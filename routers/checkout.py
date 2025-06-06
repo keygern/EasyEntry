@@ -1,9 +1,10 @@
 # routers/checkout.py
 import os, stripe
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from .auth import verify_supabase_jwt
 
 stripe.api_key = os.getenv("STRIPE_SK")
-router = APIRouter(prefix="/checkout", tags=["checkout"])
+router = APIRouter(prefix="/checkout", tags=["checkout"], dependencies=[Depends(verify_supabase_jwt)])
 
 PRICE_IDS = {          # copy from Stripe dashboard
     "hobby":   "price_1RShI44CX61ljtwHs6hCNWUB",
