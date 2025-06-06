@@ -14,8 +14,15 @@ class ColumnMappingIn(BaseModel):
     val_col: int
 
 
-# ── DB table (per seller) ────────────────────────────────────────────────
+# ── DB tables ─────────────────────────────────────────────────────────────
 class ColumnMapping(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     seller_id: str = Field(index=True, unique=True)
     mapping: dict = Field(sa_column=Column(JSON))
+
+class UserPlan(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: str = Field(index=True, unique=True)
+    plan: str = Field(default="hobby")
+    quota_remaining: int = Field(default=5)
+

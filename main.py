@@ -3,11 +3,19 @@ from dotenv import load_dotenv
 load_dotenv(override=True)                      # load .env first
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from routers import all_routers
 from db import create_db_and_tables             # import after .env loaded
 
 def create_app() -> FastAPI:
     app = FastAPI(title="EasyEntry API", version="0.1.0")
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["https://easyentry.vercel.app"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     @app.get("/")
     async def root() -> dict:
