@@ -1,8 +1,5 @@
 import { useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
 import { useMutation } from '@tanstack/react-query'
-
-const supabase = createClient('https://example.supabase.co', 'public-anon-key')
 
 export default function Upload() {
   const [file, setFile] = useState<File | null>(null)
@@ -14,7 +11,8 @@ export default function Upload() {
       const form = new FormData()
       form.append('file', file)
       form.append('doc_type', 'invoice')
-      const res = await fetch('/documents/upload', {
+      const base = process.env.NEXT_PUBLIC_API_URL || ''
+      const res = await fetch(`${base}/documents/upload`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: form,

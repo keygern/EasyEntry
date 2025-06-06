@@ -44,4 +44,12 @@ npm install    # install dependencies once
 npm run dev    # or `npm run build` to create a production build
 ```
 
+Set the following environment variables for the frontend:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=<your-supabase-url>
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<public-anon-key>
+NEXT_PUBLIC_API_URL=<backend-url>
+```
+
 The app expects to be served from `https://easyentry.vercel.app` and the API from your FastAPI server.

@@ -5,7 +5,8 @@ export default function Account() {
   const { data } = useQuery({
     queryKey: ['account'],
     queryFn: async () => {
-      const res = await fetch('/user', { headers: { Authorization: `Bearer ${token}` } })
+      const base = process.env.NEXT_PUBLIC_API_URL || ''
+      const res = await fetch(`${base}/user`, { headers: { Authorization: `Bearer ${token}` } })
       return res.json()
     },
   })
