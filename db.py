@@ -21,5 +21,5 @@ else:
     engine = create_engine(DB_URL, echo=False)
 
 def create_db_and_tables():
-    from models import ColumnMapping          # avoid circular import
+    from models import ColumnMapping, UserPlan          # avoid circular import
     SQLModel.metadata.create_all(engine)
